@@ -8,9 +8,10 @@
 
 1. Select explicit rights and budget constraints. A deterministic policy engine blocks incompatible products.
 2. Optionally ask Gemini to rank only policy-eligible datasets and explain limitations.
-3. Use PayPal JavaScript SDK v5 and the server-side **Orders v2** API to create a real sandbox order.
-4. The buyer approves payment in PayPal Sandbox. The server requires the unguessable checkout-session token, captures the approved PayPal order, then checks **order reference, currency, exact amount and completed capture status**.
-5. A token-gated receipt records the PayPal capture ID, illustrative license metadata and the dataset's SHA-256 digest. A verified purchase unlocks the synthetic CSV.
+3. Review the illustrative rights manifest and generate a single-use, 10-minute server-persisted approval quote (`/api/quotes`) before checkout.
+4. Use PayPal JavaScript SDK v5 and the server-side **Orders v2** API to create a bound sandbox order requiring the approval token.
+5. The buyer approves payment in PayPal Sandbox. The server transitions through an atomic state machine (`ORDER_CREATED -> CAPTURING -> COMPLETED`), captures the approved PayPal order, and checks **order reference, currency USD, exact amount against quote snapshot, and completed capture status**.
+6. A token-gated receipt records the PayPal capture ID, immutable quote snapshot, and the dataset's SHA-256 digest. A verified purchase unlocks the synthetic CSV.
 
 **AI cannot approve payments, override licensing policy, or access PayPal credentials.**
 
@@ -42,7 +43,7 @@ On macOS/Linux, use `python3 -m venv .venv`, `source .venv/bin/activate` and `cp
 
 1. Go to [PayPal Developer Dashboard](https://developer.paypal.com/dashboard/). Create/select a sandbox **business** REST app; copy its **Client ID** and **Secret** to `.env` as `PAYPAL_CLIENT_ID` and `PAYPAL_CLIENT_SECRET`.
 2. In **Testing Tools → Sandbox Accounts**, locate or create a **personal** buyer account; use its credentials **only inside the PayPal Sandbox login popup**. Never place buyer passwords in `.env`, code, or README.
-3. Create an API key at [Google AI Studio](https://aistudio.google.com/apikey). Set `GEMINI_API_KEY` in `.env`. `GEMINI_MODEL` defaults to `gemini-3.8-flash`; choose a model actually available to your account if needed.
+3. Create an API key at [Google AI Studio](https://aistudio.google.com/apikey). Set `GEMINI_API_KEY` in `.env`. `GEMINI_MODEL` defaults to `gemini-3.5-flash-lite` (optimized for 500 RPD quota); choose a model actually available to your account if needed.
 4. Generate a random signing key and set `APP_SIGNING_KEY`; a missing key creates an **ephemeral** key, making previously issued tokens invalid after restart.
 
 The PayPal JavaScript SDK displays the sandbox checkout UI based on the app's sandbox client ID. The backend never uses `api-m.paypal.com`: all requests go to `api-m.sandbox.paypal.com`.

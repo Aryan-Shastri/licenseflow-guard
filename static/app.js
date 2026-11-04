@@ -107,21 +107,28 @@ function renderPayPalButtons(){
   window.paypal.Buttons({
     style:{layout:'vertical',shape:'rect',label:'pay'},
     createOrder:async()=>{
-      if(!activeQuote)throw Error('Approval quote expired or missing. Please re-authorize.');
+      if(!activeQuote)throw Error('Approval quote expired or missing. Please check the authorization box to generate a fresh quote.');
       const current=selected;
       text($('checkout-message'),'Creating server-bound PayPal order…');
-      const result=await request('/api/purchases',{
-        method:'POST',
-        body:JSON.stringify({
-          dataset_id:current,
-          intent:intent(),
-          quote_id:activeQuote.quote_id,
-          approval_token:activeQuote.approval_token
-        })
-      });
-      checkoutSession={...result,dataset_id:current};
-      text($('checkout-message'),'PayPal sandbox order created. Complete payment in the popup window.');
-      return result.order_id;
+      try{
+        const result=await request('/api/purchases',{
+          method:'POST',
+          body:JSON.stringify({
+            dataset_id:current,
+            intent:intent(),
+            quote_id:activeQuote.quote_id,
+            approval_token:activeQuote.approval_token
+          })
+        });
+        checkoutSession={...result,dataset_id:current};
+        text($('checkout-message'),'PayPal sandbox order created. Complete payment in the popup window.');
+        return result.order_id;
+      }catch(e){
+        resetQuote();
+        renderDetails();
+        text($('checkout-message'),`Order creation blocked: ${e.message}`);
+        throw e;
+      }
     },
     onApprove:async()=>{
       try{
