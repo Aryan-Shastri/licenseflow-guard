@@ -50,6 +50,18 @@ async def capture_order(purchase_id, order_id):
             raise HTTPException(502,'PayPal sandbox capture failed; verify status before retrying')
 
 
+async def get_order_details(order_id):
+    async with httpx.AsyncClient(timeout=20.0) as client:
+        token=await _token(client)
+        try:
+            r=await client.get(f'{API}/v2/checkout/orders/{order_id}',
+                                headers={'Authorization':f'Bearer {token}','Accept':'application/json'})
+            r.raise_for_status()
+            return r.json()
+        except (httpx.HTTPError,ValueError):
+            raise HTTPException(502,'PayPal sandbox order status query failed')
+
+
 def capture_verified(capture_response, purchase_id, item):
     try:
         if capture_response['status']!='COMPLETED': return None

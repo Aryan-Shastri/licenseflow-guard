@@ -49,23 +49,64 @@ The PayPal JavaScript SDK displays the sandbox checkout UI based on the app's sa
 
 **Note for India-based developers:** Eligibility for this hackathon and availability of PayPal developer accounts are separate. For sandbox buyer tests with USD, a US-region personal sandbox payer may work when an India-region payer does not; verify against current PayPal account availability and rules. Never use live financial credentials to bypass country limitations.
 
+## Architecture
+
+```mermaid
+flowchart TD
+    subgraph Client["Browser Client (Untrusted)"]
+        UI[Checkout UI]
+        Consent[Consent & Terms Review]
+    end
+
+    subgraph Server["FastAPI Backend (Trusted Boundary)"]
+        Policy[Deterministic Policy Engine]
+        AI[Gemini Advisory Model<br/>Fallback Chain: 3.8 -> 3.7 -> 3.5]
+        Quote[Server Quote & Approval Gate<br/>Single-use, 10-min, SHA-256 Hashed]
+        Orders[Order State Machine<br/>ORDER_CREATED -> CAPTURING -> COMPLETED]
+        Verify[PayPal Capture Verification<br/>Exact Amount, Currency USD, Reference ID]
+        DB[(SQLite Audit Store<br/>Approvals, Purchases, Events)]
+    end
+
+    subgraph PayPalRail["PayPal Sandbox Environment"]
+        PPOrders[Orders v2 API]
+        PPCapture[Capture API]
+    end
+
+    UI -->|Intent & Budget| Policy
+    Policy -->|Eligible IDs only| AI
+    AI -.->|Untrusted Recommendations| UI
+    Consent -->|Request Server Quote| Quote
+    Quote -->|Write Approval Token| DB
+    Quote -->|Bound Quote| UI
+    UI -->|Quote ID + Token| Orders
+    Orders -->|Verify & Consume Quote| DB
+    Orders -->|Create Order| PPOrders
+    UI -->|Buyer Approval in Popup| PPCapture
+    UI -->|Capture Request| Orders
+    Orders -->|Verify Capture| Verify
+    Verify -->|Query Capture| PPCapture
+    Verify -->|Store Snapshot & Status| DB
+    Orders -->|HMAC Bearer Token| UI
+    UI -->|Token-gated Download| DB
+```
+
 ## Verification tests
 
 ```bash
-python -m pip install pytest
-python -m pytest -q
+# Run complete test suite (unit, policy, integration, adversarial)
+../.venv/Scripts/python.exe -m pytest tests/ -v
 ```
 
-These tests mock PayPal. They **do not** establish that live sandbox integration or live Gemini matching succeeds. Verify a real sandbox payer approval and capture separately.
+These automated tests include mocked PayPal and Gemini fixtures, along with 10 parameterized adversarial security regressions in `tests/test_security_adversarial.py`. They **do not** claim that live network integrations succeed without credentials. Live PayPal Sandbox checkout and live Gemini inference should be verified independently with active credentials.
 
 ## Demo flow
 
 1. Set budget to **$35**, commercial use = yes, model training = yes, redistribution = no.
-2. Click **Apply rights filter only**: `support-intent` and `safe-security` are eligible; other products are blocked.
-3. Click **Match with AI** after adding Gemini credentials. Confirm Gemini ranks eligible datasets but does not override rights.
-4. Select `support-intent`; check the illustrative license manifest, then authorize sandbox checkout.
-5. Complete PayPal sandbox checkout with the personal **sandbox** buyer.
-6. Confirm **PayPal capture verified**. Download the CSV and JSON provenance receipt, and compare its SHA-256 value to the file.
+2. Click **Apply rights filter only**: `support-intent` and `safe-security` are eligible; `civic-dialogue` (non-commercial) and `retail-demand` (over-budget $44) are blocked with explicit rationales.
+3. Click **Match with AI**: Gemini provides advisory ranking for eligible datasets without modifying policy.
+4. Select `support-intent`; review the illustrative license manifest, then check the approval box to mint a server-persisted single-use quote.
+5. Complete PayPal sandbox checkout with the personal **sandbox** buyer account.
+6. Observe **PayPal capture verified**. Download the CSV dataset and JSON provenance receipt, and verify its SHA-256 hash.
 
 ### Acceptance test
 
@@ -73,13 +114,16 @@ A reviewer can run the commands, see a model-generated recommendation when the k
 
 ## API summary
 
+- `GET /api/health` — service health and sandbox status
+- `GET /api/config` — client configuration flags (sandbox mode, feature flags)
 - `GET /api/catalog` — synthetic product registry and digest
 - `POST /api/eligibility` — deterministic buyer-intent filter
-- `POST /api/match` — optional Gemini ranking, results revalidated by server
-- `POST /api/purchases` — creates a server-priced PayPal sandbox order
-- `POST /api/purchases/{id}/capture` — attempts capture and verifies amount and reference
-- `GET /api/purchases/{id}/receipt` — requires receipt bearer token
-- `GET /api/purchases/{id}/download` — requires receipt bearer token
+- `POST /api/match` — Gemini advisory ranking with fallback resilience, results filtered by server
+- `POST /api/quotes` — generates server-persisted single-use approval quote (10 min TTL)
+- `POST /api/purchases` — validates quote binding, consumes token, and creates PayPal sandbox order
+- `POST /api/purchases/{id}/capture` — atomic capture verification against snapshot price and reference
+- `GET /api/purchases/{id}/receipt` — requires receipt bearer token; returns immutable snapshot
+- `GET /api/purchases/{id}/download` — token-gated CSV data download for completed purchases
 - `GET /api/docs` — automatically generated API documentation
 
 ## Security boundaries and open work

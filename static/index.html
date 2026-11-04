@@ -58,7 +58,8 @@
           </div>
           <div class="hash-display"><div class="mini-label">CONTENT HASH / SHA-256</div><code id="selected-hash">—</code></div>
           <div id="eligibility-box" class="eligibility muted">Choose an item to check eligibility.</div>
-          <label class="consent"><input type="checkbox" id="accept"><span>I have reviewed the illustrative rights manifest and authorize the sandbox checkout.</span></label>
+          <div id="quote-box" class="quote-box" hidden></div>
+          <label class="consent" id="consent-wrapper"><input type="checkbox" id="accept"><span>Review rights manifest and generate a server-bound approval quote.</span></label>
           <div id="paypal-area"><p class="muted small">PayPal button becomes available after you select an eligible dataset and approve its terms.</p></div>
           <div id="checkout-message" role="status" aria-live="polite"></div>
           <p class="tiny-disclaimer">No real payments or personal data. Not legal advice. The prototype does not confer legal rights to third-party datasets.</p>

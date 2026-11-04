@@ -622,6 +622,35 @@ input[type=number] {
     color: #f7b5a8
 }
 
+.quote-box {
+    margin: 14px 0;
+    background: #111a14;
+    border: 1px solid #4a6c47;
+    padding: 13px 15px;
+    font-size: 11px;
+    line-height: 1.6;
+    color: #d0ded0;
+}
+
+.quote-box strong {
+    color: var(--lime);
+    display: block;
+    margin-bottom: 5px;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.quote-badge {
+    display: inline-block;
+    font: 9px monospace;
+    padding: 3px 6px;
+    background: #1c2e22;
+    border: 1px solid #3e6642;
+    color: var(--lime);
+    margin-top: 6px;
+}
+
 .consent {
     display: flex;
     align-items: flex-start;
