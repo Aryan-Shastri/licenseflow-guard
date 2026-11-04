@@ -216,7 +216,7 @@ async def create(req:CreatePurchase):
 
     # Validate integrity of bound parameters
     if appr['dataset_id']!=req.dataset_id or appr['price_usd']!=item['price'] or appr['currency']!='USD':
-        raise HTTPException(422,'Approval binding parameters do not match requested purchase')
+        raise HTTPException(422,'Approval binding parameters mismatch: does not match requested purchase')
 
     # Atomically mark approval as CONSUMED to prevent race condition replays
     with connection() as db:
