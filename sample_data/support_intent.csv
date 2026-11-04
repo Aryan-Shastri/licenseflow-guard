@@ -1,0 +1,49 @@
+row_id,text,intent
+1,How can I update the invoice? (example 1),billing
+2,The sign-in link has expired. (example 1),technical
+3,Please cancel my plan. (example 1),cancel
+4,Where do I find the export option? (example 1),how_to
+5,The updated page works well. (example 1),feedback
+6,Can I reset my password? (example 1),account
+7,How can I update the invoice? (example 2),billing
+8,The sign-in link has expired. (example 2),technical
+9,Please cancel my plan. (example 2),cancel
+10,Where do I find the export option? (example 2),how_to
+11,The updated page works well. (example 2),feedback
+12,Can I reset my password? (example 2),account
+13,How can I update the invoice? (example 3),billing
+14,The sign-in link has expired. (example 3),technical
+15,Please cancel my plan. (example 3),cancel
+16,Where do I find the export option? (example 3),how_to
+17,The updated page works well. (example 3),feedback
+18,Can I reset my password? (example 3),account
+19,How can I update the invoice? (example 4),billing
+20,The sign-in link has expired. (example 4),technical
+21,Please cancel my plan. (example 4),cancel
+22,Where do I find the export option? (example 4),how_to
+23,The updated page works well. (example 4),feedback
+24,Can I reset my password? (example 4),account
+25,How can I update the invoice? (example 5),billing
+26,The sign-in link has expired. (example 5),technical
+27,Please cancel my plan. (example 5),cancel
+28,Where do I find the export option? (example 5),how_to
+29,The updated page works well. (example 5),feedback
+30,Can I reset my password? (example 5),account
+31,How can I update the invoice? (example 6),billing
+32,The sign-in link has expired. (example 6),technical
+33,Please cancel my plan. (example 6),cancel
+34,Where do I find the export option? (example 6),how_to
+35,The updated page works well. (example 6),feedback
+36,Can I reset my password? (example 6),account
+37,How can I update the invoice? (example 7),billing
+38,The sign-in link has expired. (example 7),technical
+39,Please cancel my plan. (example 7),cancel
+40,Where do I find the export option? (example 7),how_to
+41,The updated page works well. (example 7),feedback
+42,Can I reset my password? (example 7),account
+43,How can I update the invoice? (example 8),billing
+44,The sign-in link has expired. (example 8),technical
+45,Please cancel my plan. (example 8),cancel
+46,Where do I find the export option? (example 8),how_to
+47,The updated page works well. (example 8),feedback
+48,Can I reset my password? (example 8),account
