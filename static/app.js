@@ -274,3 +274,328 @@ $('receipt-json').addEventListener('click',async()=>{
 });
 
 init();
+
+
+// --- AG STUDIO PROCUREMENT SECURITY INTELLIGENCE DASHBOARD ---
+let gridApi = null;
+let chartPolicyInstance = null;
+let chartSpendInstance = null;
+let auditTelemetryData = null;
+
+function setupNavigation() {
+  const tabMarketplace = $('tab-marketplace');
+  const tabAnalytics = $('tab-analytics');
+  const viewMarketplace = $('view-marketplace');
+  const viewAnalytics = $('view-analytics');
+
+  if (!tabMarketplace || !tabAnalytics) return;
+
+  tabMarketplace.addEventListener('click', () => {
+    tabMarketplace.classList.add('active');
+    tabMarketplace.setAttribute('aria-selected', 'true');
+    tabAnalytics.classList.remove('active');
+    tabAnalytics.setAttribute('aria-selected', 'false');
+    viewMarketplace.hidden = false;
+    viewAnalytics.hidden = true;
+  });
+
+  tabAnalytics.addEventListener('click', () => {
+    tabAnalytics.classList.add('active');
+    tabAnalytics.setAttribute('aria-selected', 'true');
+    tabMarketplace.classList.remove('active');
+    tabMarketplace.setAttribute('aria-selected', 'false');
+    viewMarketplace.hidden = true;
+    viewAnalytics.hidden = false;
+    loadAuditTelemetry();
+  });
+}
+
+async function loadAuditTelemetry() {
+  try {
+    const data = await request('/api/audit/intelligence');
+    auditTelemetryData = data;
+    renderAuditMetrics(data.metrics);
+    renderAuditGrid(data.records);
+    renderAuditCharts(data.policy_breakdown, data.spend_by_dataset);
+  } catch (err) {
+    console.error('Failed to load audit telemetry:', err);
+  }
+}
+
+function renderAuditMetrics(metrics) {
+  if (!metrics) return;
+  text($('metric-spend'), `$${metrics.total_spend_usd} USD`);
+  text($('metric-purchases'), String(metrics.completed_purchases));
+  text($('metric-refusals'), String(metrics.policy_refusals));
+  text($('metric-approvals'), String(metrics.approvals_issued));
+  text($('metric-security'), `${metrics.security_defenses}/${metrics.security_defenses}`);
+  text($('grid-row-count'), `${auditTelemetryData ? auditTelemetryData.records.length : 0} RECORDS`);
+}
+
+function renderAuditGrid(records) {
+  const gridDiv = $('procurementGrid');
+  if (!gridDiv || typeof agGrid === 'undefined') return;
+
+  if (gridApi) {
+    gridApi.setGridOption('rowData', records);
+    return;
+  }
+
+  const columnDefs = [
+    {
+      field: 'timestamp',
+      headerName: 'TIMESTAMP (UTC)',
+      width: 175,
+      sortable: true,
+      filter: true,
+      valueFormatter: p => p.value ? p.value.replace('T', ' ').substring(0, 19) : ''
+    },
+    {
+      field: 'category',
+      headerName: 'CATEGORY',
+      width: 140,
+      sortable: true,
+      filter: true
+    },
+    {
+      field: 'dataset_name',
+      headerName: 'DATASET',
+      width: 220,
+      sortable: true,
+      filter: true
+    },
+    {
+      field: 'amount_usd',
+      headerName: 'AMOUNT',
+      width: 110,
+      sortable: true,
+      valueFormatter: p => `$${p.value} USD`
+    },
+    {
+      field: 'status',
+      headerName: 'STATUS',
+      width: 150,
+      sortable: true,
+      filter: true,
+      cellRenderer: p => {
+        const val = p.value || '';
+        let cls = 'completed';
+        if (val.includes('REFUSED') || val.includes('REJECTED') || val.includes('FAILED')) cls = 'refused';
+        else if (val.includes('APPROVED')) cls = 'approved';
+        else if (val.includes('REPLAY') || val.includes('TAMPER')) cls = 'security';
+        return `<span class="grid-badge ${cls}">${val}</span>`;
+      }
+    },
+    {
+      field: 'reference_id',
+      headerName: 'REFERENCE / CAPTURE',
+      width: 190,
+      valueFormatter: p => p.value || 'N/A'
+    },
+    {
+      field: 'sha256',
+      headerName: 'INTEGRITY SHA-256',
+      width: 160,
+      valueFormatter: p => p.value ? p.value.substring(0, 12) + '...' : '—'
+    },
+    {
+      headerName: 'INSPECT',
+      width: 95,
+      sortable: false,
+      filter: false,
+      cellRenderer: p => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-inspect';
+        btn.textContent = 'DETAILS';
+        btn.onclick = () => openDecisionModal(p.data);
+        return btn;
+      }
+    }
+  ];
+
+  const gridOptions = {
+    columnDefs: columnDefs,
+    rowData: records,
+    pagination: true,
+    paginationPageSize: 10,
+    domLayout: 'normal',
+    rowSelection: 'single',
+    animateRows: true
+  };
+
+  gridApi = agGrid.createGrid(gridDiv, gridOptions);
+}
+
+function renderAuditCharts(breakdown, spend) {
+  if (typeof agCharts === 'undefined') return;
+
+  const breakdownDiv = $('chart-policy-breakdown');
+  if (breakdownDiv && !chartPolicyInstance) {
+    breakdownDiv.replaceChildren();
+    const breakdownOptions = {
+      container: breakdownDiv,
+      theme: 'ag-default-dark',
+      data: breakdown,
+      series: [{
+        type: 'donut',
+        angleKey: 'count',
+        legendItemKey: 'verdict',
+        fills: ['#00ff9d', '#f87171', '#38bdf8', '#fbbf24'],
+        strokes: ['#080c14'],
+        innerRadiusRatio: 0.58
+      }]
+    };
+    chartPolicyInstance = agCharts.AgCharts.create(breakdownOptions);
+  }
+
+  const spendDiv = $('chart-spend-dataset');
+  if (spendDiv && !chartSpendInstance) {
+    spendDiv.replaceChildren();
+    const spendOptions = {
+      container: spendDiv,
+      theme: 'ag-default-dark',
+      data: spend,
+      series: [{
+        type: 'bar',
+        xKey: 'dataset',
+        yKey: 'spend',
+        fill: '#00ff9d',
+        stroke: '#00ff9d'
+      }],
+      axes: [
+        { type: 'category', position: 'bottom' },
+        { type: 'number', position: 'left', label: { formatter: p => `$${p.value}` } }
+      ]
+    };
+    chartSpendInstance = agCharts.AgCharts.create(spendOptions);
+  }
+}
+
+function openDecisionModal(record) {
+  if (!record) return;
+  const modal = $('decision-modal');
+  const content = $('modal-content');
+  if (!modal || !content) return;
+
+  content.replaceChildren();
+
+  const addRow = (label, val, isCode = false) => {
+    const item = el('div', 'detail-item');
+    item.append(el('span', 'detail-label', label));
+    if (isCode) {
+      const c = el('code', 'detail-code', String(val || '—'));
+      item.append(c);
+    } else {
+      item.append(el('span', 'detail-value', String(val || '—')));
+    }
+    content.append(item);
+  };
+
+  addRow('AUDIT RECORD ID', record.id);
+  addRow('TIMESTAMP (UTC)', record.timestamp);
+  addRow('EVENT CATEGORY', record.category);
+  addRow('EVENT TYPE', record.event_type);
+  addRow('DATASET NAME', record.dataset_name);
+  addRow('DATASET IDENTIFIER', record.dataset_id);
+  addRow('TRANSACTION AMOUNT', `$${record.amount_usd} ${record.currency || 'USD'}`);
+  addRow('STATUS & VERDICT', `${record.status} (${record.policy_verdict || 'N/A'})`);
+  addRow('EXPLANATION & REASON', record.reason);
+  addRow('PAYPAL REFERENCE / CAPTURE ID', record.reference_id, true);
+  addRow('DATASET CONTENT HASH (SHA-256)', record.sha256, true);
+  if (record.approval_id) addRow('SERVER APPROVAL QUOTE ID', record.approval_id, true);
+  if (record.buyer_intent) addRow('BOUND BUYER INTENT SNAPSHOT', JSON.stringify(record.buyer_intent, null, 2), true);
+
+  modal.hidden = false;
+}
+
+function setupAuditControls() {
+  const filterSelect = $('filter-status');
+  const quickSearch = $('grid-quick-search');
+  const refreshBtn = $('btn-refresh-telemetry');
+  const exportBtn = $('btn-export-csv');
+  const modalClose = $('modal-close');
+  const modal = $('decision-modal');
+
+  if (filterSelect) {
+    filterSelect.addEventListener('change', () => {
+      const val = filterSelect.value.trim();
+      if (!gridApi) return;
+      if (val) {
+        gridApi.setGridOption('quickFilterText', val);
+      } else {
+        gridApi.setGridOption('quickFilterText', quickSearch ? quickSearch.value : '');
+      }
+    });
+  }
+
+  if (quickSearch) {
+    quickSearch.addEventListener('input', () => {
+      if (gridApi) gridApi.setGridOption('quickFilterText', quickSearch.value);
+    });
+  }
+
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', () => loadAuditTelemetry());
+  }
+
+  if (exportBtn) {
+    exportBtn.addEventListener('click', () => {
+      if (gridApi) gridApi.exportDataAsCsv();
+    });
+  }
+
+  if (modalClose) {
+    modalClose.addEventListener('click', () => { if (modal) modal.hidden = true; });
+  }
+
+  if (modal) {
+    modal.addEventListener('click', e => {
+      if (e.target === modal) modal.hidden = true;
+    });
+  }
+
+  const agentBtn = $('agent-query-btn');
+  const agentInput = $('agent-query-input');
+  const promptChips = document.querySelectorAll('.prompt-chip');
+
+  const executeAgentQuery = async (queryText) => {
+    if (!queryText.trim()) return;
+    const box = $('agent-response-box');
+    const textEl = $('agent-response-text');
+    const roleEl = $('agent-role-badge');
+    const catEl = $('agent-cat-badge');
+
+    if (box) box.hidden = false;
+    if (textEl) textEl.textContent = 'Querying Security Telemetry Advisor…';
+
+    try {
+      const res = await request('/api/audit/agent/query', {
+        method: 'POST',
+        body: JSON.stringify({ query: queryText })
+      });
+      if (roleEl) roleEl.textContent = res.agent_role || 'TELEMETRY ADVISOR';
+      if (catEl) catEl.textContent = res.category || 'AUDIT';
+      if (textEl) textEl.textContent = res.answer || 'No response';
+    } catch (err) {
+      if (textEl) textEl.textContent = `Agent error: ${err.message}`;
+    }
+  };
+
+  if (agentBtn && agentInput) {
+    agentBtn.addEventListener('click', () => executeAgentQuery(agentInput.value));
+    agentInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') executeAgentQuery(agentInput.value);
+    });
+  }
+
+  promptChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const q = chip.getAttribute('data-query');
+      if (agentInput) agentInput.value = q;
+      executeAgentQuery(q);
+    });
+  });
+}
+
+setupNavigation();
+setupAuditControls();

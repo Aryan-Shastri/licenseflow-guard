@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>AG Studio 3.1 Feasibility Evaluation — LicenseFlow Guard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { margin: 0; background: #080c14; color: #f1f5f9; font-family: sans-serif; }
+    header { padding: 16px 24px; border-bottom: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; }
+    h1 { margin: 0; font-size: 16px; color: #00ff9d; }
+    .badge { font-size: 11px; padding: 4px 8px; border: 1px solid #334155; }
+    #studio-container { width: 100vw; height: calc(100vh - 60px); }
+    #status-overlay { position: fixed; bottom: 20px; right: 20px; background: #0f172a; border: 1px solid #00ff9d; padding: 12px 18px; font-size: 12px; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/ag-studio@3.1.0/dist/umd/ag-studio.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>AG Studio 3.1 Embedded Analytics Feasibility Test</h1>
+    <div class="badge">EVALUATION ONLY · COMMERCIAL ENTERPRISE LICENSE REQUIRED</div>
+  </header>
+  <div id="studio-container"></div>
+  <div id="status-overlay">Initializing AG Studio…</div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', async () => {
+      const statusEl = document.getElementById('status-overlay');
+      try {
+        if (typeof agStudio === 'undefined') {
+          statusEl.textContent = 'agStudio global not found (bundle load failed or unsupported environment)';
+          return;
+        }
+
+        const auditData = [
+          { recordId: 'PUR-01', dataset: 'support-intent', amount: 24.0, status: 'COMPLETED', reference: '3E583077NN119930W' },
+          { recordId: 'PUR-02', dataset: 'support-intent', amount: 24.0, status: 'COMPLETED', reference: '5VR61204K9507103C' },
+          { recordId: 'POL-01', dataset: 'retail-demand', amount: 44.0, status: 'REFUSED', reference: 'refusal-budget' },
+          { recordId: 'POL-02', dataset: 'civic-dialogue', amount: 12.0, status: 'REFUSED', reference: 'refusal-license' }
+        ];
+
+        const container = document.getElementById('studio-container');
+        const studioApi = agStudio.createStudio(container, {
+          data: {
+            sources: [
+              {
+                id: 'procurement_audit',
+                data: auditData
+              }
+            ]
+          },
+          mode: 'view'
+        });
+
+        statusEl.innerHTML = '<span style="color:#00ff9d">✓ AG Studio 3.1 successfully embedded!</span> (Evaluation Trial Mode)';
+        console.log('AG Studio API initialized:', studioApi);
+      } catch (err) {
+        statusEl.innerHTML = `<span style="color:#f87171">AG Studio error: ${err.message}</span>`;
+        console.error('AG Studio error:', err);
+      }
+    });
+  </script>
+</body>
+</html>

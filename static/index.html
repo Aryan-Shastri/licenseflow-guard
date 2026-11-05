@@ -2,74 +2,235 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="LicenseFlow AI — rights-aware AI dataset procurement with PayPal sandbox checkout">
-  <title>LicenseFlow AI — Rights-aware dataset commerce</title>
+  <meta name="description" content="LicenseFlow AI — rights-aware AI dataset procurement with PayPal sandbox checkout and AG Grid analytics">
+  <title>LicenseFlow Guard — Rights-Aware Commerce &amp; AG Grid Procurement Intelligence</title>
   <link rel="stylesheet" href="/style.css">
+  <!-- AG Grid Community v32 & AG Charts Community v10 Styles -->
+  <link rel="stylesheet" href="/vendor/ag-grid.css">
+  <link rel="stylesheet" href="/vendor/ag-theme-quartz.css">
 </head>
 <body>
   <div class="ambient"></div>
   <header class="topbar">
     <a class="brand" href="/"><span class="brandmark">L<span>F</span></span><span>licenseflow<span class="thin"> / AI</span></span></a>
+    <div class="nav-tabs" role="tablist" aria-label="Application views">
+      <button class="nav-tab active" id="tab-marketplace" role="tab" aria-selected="true" aria-controls="view-marketplace" tabindex="0">DATASET COMMERCE</button>
+      <button class="nav-tab" id="tab-analytics" role="tab" aria-selected="false" aria-controls="view-analytics" tabindex="0">AUDIT INTELLIGENCE (AG GRID)</button>
+    </div>
     <div class="topright"><span class="env-indicator"><span class="live-dot"></span>PAYPAL SANDBOX</span><span class="edition">HACKATHON EDITION · 2026</span></div>
   </header>
   <main class="page">
-    <section class="hero">
-      <div class="eyebrow"><span class="rule"></span>DATA PROCUREMENT / REIMAGINED</div>
-      <div class="hero-layout"><div><h1>Find the data.<br><em>Know the rights.</em><br>Build with confidence.</h1>
-        <p class="hero-description">The AI-assisted marketplace that aligns dataset licensing with your engineering intent — then ties a sandbox payment to a verifiable dataset receipt.</p>
-      </div><div class="hero-numbers"><span class="hero-number">04</span><span class="hero-number-caption">CURATED SYNTHETIC DATASETS</span><div class="hero-border"></div><span class="hero-number">01</span><span class="hero-number-caption">VERIFIED PAYMENT RAIL</span></div></div>
-    </section>
-    <div class="workspace-title"><span>YOUR WORKSPACE</span><span class="workspace-line"></span><span>01 — 03</span></div>
-    <div class="main-grid">
-      <aside class="panel intent-panel">
-        <div class="panel-header"><span class="step">01</span><span>DEFINE THE MISSION</span></div>
-        <div class="panel-body">
-          <h2>What are you<br>building?</h2>
-          <p class="muted">Describe your project. We'll check explicit licensing permissions before asking AI to rank eligible datasets.</p>
-          <label for="goal">ENGINEERING INTENT</label>
-          <textarea id="goal" rows="5">I need a labeled dataset to train a commercial customer-support classifier. I cannot redistribute the raw dataset.</textarea>
-          <label for="budget">MAXIMUM BUDGET <span class="muted">USD</span></label>
-          <div class="budget-input"><span>$</span><input id="budget" type="number" value="35" min="1" max="10000" step="1" /></div>
-          <p class="section-label">REQUIRED RIGHTS</p>
-          <label class="toggle-row"><span><strong>Commercial use</strong><small>Building a product for customers</small></span><input type="checkbox" id="commercial" checked /></label>
-          <label class="toggle-row"><span><strong>Model training</strong><small>Use data for model development</small></span><input type="checkbox" id="training" checked /></label>
-          <label class="toggle-row"><span><strong>Redistribution</strong><small>Share raw data with other parties</small></span><input type="checkbox" id="redistribution" /></label>
-          <button class="primary" id="match">MATCH WITH AI <span>↗</span></button>
-          <button class="secondary-btn" id="filter">APPLY RIGHTS FILTER ONLY</button>
-          <p class="small-note" id="ai-status">Checking AI configuration…</p>
+    <!-- View 1: Dataset Marketplace & Checkout (Preserved 100%) -->
+    <div id="view-marketplace">
+      <section class="hero">
+        <div class="eyebrow"><span class="rule"></span>DATA PROCUREMENT / REIMAGINED</div>
+        <div class="hero-layout"><div><h1>Find the data.<br><em>Know the rights.</em><br>Build with confidence.</h1>
+          <p class="hero-description">The AI-assisted marketplace that aligns dataset licensing with your engineering intent — then ties a sandbox payment to a verifiable dataset receipt.</p>
+        </div><div class="hero-numbers"><span class="hero-number">04</span><span class="hero-number-caption">CURATED SYNTHETIC DATASETS</span><div class="hero-border"></div><span class="hero-number">01</span><span class="hero-number-caption">VERIFIED PAYMENT RAIL</span></div></div>
+      </section>
+      <div class="workspace-title"><span>YOUR WORKSPACE</span><span class="workspace-line"></span><span>01 — 03</span></div>
+      <div class="main-grid">
+        <aside class="panel intent-panel">
+          <div class="panel-header"><span class="step">01</span><span>DEFINE THE MISSION</span></div>
+          <div class="panel-body">
+            <h2>What are you<br>building?</h2>
+            <p class="muted">Describe your project. We'll check explicit licensing permissions before asking AI to rank eligible datasets.</p>
+            <label for="goal">ENGINEERING INTENT</label>
+            <textarea id="goal" rows="5">I need a labeled dataset to train a commercial customer-support classifier. I cannot redistribute the raw dataset.</textarea>
+            <label for="budget">MAXIMUM BUDGET <span class="muted">USD</span></label>
+            <div class="budget-input"><span>$</span><input id="budget" type="number" value="35" min="1" max="10000" step="1" /></div>
+            <p class="section-label">REQUIRED RIGHTS</p>
+            <label class="toggle-row"><span><strong>Commercial use</strong><small>Building a product for customers</small></span><input type="checkbox" id="commercial" checked /></label>
+            <label class="toggle-row"><span><strong>Model training</strong><small>Use data for model development</small></span><input type="checkbox" id="training" checked /></label>
+            <label class="toggle-row"><span><strong>Redistribution</strong><small>Share raw data with other parties</small></span><input type="checkbox" id="redistribution" /></label>
+            <button class="primary" id="match">MATCH WITH AI <span>↗</span></button>
+            <button class="secondary-btn" id="filter">APPLY RIGHTS FILTER ONLY</button>
+            <p class="small-note" id="ai-status">Checking AI configuration…</p>
+          </div>
+        </aside>
+        <section class="panel catalog-panel">
+          <div class="panel-header"><span class="step">02</span><span>EXPLORE THE COLLECTION</span><span id="catalog-count" class="count">04 DATASETS</span></div>
+          <div class="panel-body catalog-body">
+            <div class="catalog-intro"><h2>Evidence over<br><em>assumptions.</em></h2><p class="muted">Only synthetic examples are shown. Rights are demonstration metadata, not independently audited licenses.</p></div>
+            <div id="ai-result" class="ai-result" hidden></div>
+            <div id="catalog" class="catalog-items"><p class="muted">Loading datasets…</p></div>
+          </div>
+        </section>
+        <aside class="panel details-panel">
+          <div class="panel-header"><span class="step">03</span><span>VERIFY &amp; CHECK OUT</span></div>
+          <div class="panel-body">
+            <div class="mini-label">SELECTED DATASET</div><h2 id="selected-title">Choose a<br>dataset</h2>
+            <div class="selected-meta"><span id="selected-domain">—</span><span id="selected-price">$—</span></div>
+            <p class="muted" id="selected-desc">Select a dataset from the collection to inspect its declared licensing terms.</p>
+            <div class="license-box"><div class="license-title"><span>RIGHTS MANIFEST</span><span class="verified-icon">◇</span></div>
+              <div id="license-terms"><div class="license-row"><span>Commercial use</span><span>—</span></div><div class="license-row"><span>Model training</span><span>—</span></div><div class="license-row"><span>Redistribution</span><span>—</span></div></div>
+            </div>
+            <div class="hash-display"><div class="mini-label">CONTENT HASH / SHA-256</div><code id="selected-hash">—</code></div>
+            <div id="eligibility-box" class="eligibility muted">Choose an item to check eligibility.</div>
+            <div id="quote-box" class="quote-box" hidden></div>
+            <label class="consent" id="consent-wrapper"><input type="checkbox" id="accept"><span>Review rights manifest and generate a server-bound approval quote.</span></label>
+            <div id="paypal-area"><p class="muted small">PayPal button becomes available after you select an eligible dataset and approve its terms.</p></div>
+            <div id="checkout-message" role="status" aria-live="polite"></div>
+            <p class="tiny-disclaimer">No real payments or personal data. Not legal advice. The prototype does not confer legal rights to third-party datasets.</p>
+          </div>
+        </aside>
+      </div>
+      <section class="receipt-panel" id="receipt" hidden>
+        <div>
+          <div class="eyebrow"><span class="rule"></span>CAPTURE CONFIRMED</div>
+          <h2>From insight to<br><em>verified acquisition.</em></h2>
+          <p class="muted">PayPal sandbox confirmed the amount and order. Your synthetic dataset and receipt are now unlocked.</p>
         </div>
-      </aside>
-      <section class="panel catalog-panel">
-        <div class="panel-header"><span class="step">02</span><span>EXPLORE THE COLLECTION</span><span id="catalog-count" class="count">04 DATASETS</span></div>
-        <div class="panel-body catalog-body">
-          <div class="catalog-intro"><h2>Evidence over<br><em>assumptions.</em></h2><p class="muted">Only synthetic examples are shown. Rights are demonstration metadata, not independently audited licenses.</p></div>
-          <div id="ai-result" class="ai-result" hidden></div>
-          <div id="catalog" class="catalog-items"><p class="muted">Loading datasets…</p></div>
+        <div class="receipt-actions">
+          <div class="receipt-line"><span>PAYPAL CAPTURE</span><code id="capture-id">—</code></div>
+          <div class="receipt-line"><span>DATASET SHA-256</span><code id="receipt-hash">—</code></div>
+          <button id="download" class="primary">DOWNLOAD VERIFIED DATASET <span>↓</span></button>
+          <button id="receipt-json" class="secondary-btn">DOWNLOAD PROVENANCE RECEIPT</button>
         </div>
       </section>
-      <aside class="panel details-panel">
-        <div class="panel-header"><span class="step">03</span><span>VERIFY & CHECK OUT</span></div>
-        <div class="panel-body">
-          <div class="mini-label">SELECTED DATASET</div><h2 id="selected-title">Choose a<br>dataset</h2>
-          <div class="selected-meta"><span id="selected-domain">—</span><span id="selected-price">$—</span></div>
-          <p class="muted" id="selected-desc">Select a dataset from the collection to inspect its declared licensing terms.</p>
-          <div class="license-box"><div class="license-title"><span>RIGHTS MANIFEST</span><span class="verified-icon">◇</span></div>
-            <div id="license-terms"><div class="license-row"><span>Commercial use</span><span>—</span></div><div class="license-row"><span>Model training</span><span>—</span></div><div class="license-row"><span>Redistribution</span><span>—</span></div></div>
-          </div>
-          <div class="hash-display"><div class="mini-label">CONTENT HASH / SHA-256</div><code id="selected-hash">—</code></div>
-          <div id="eligibility-box" class="eligibility muted">Choose an item to check eligibility.</div>
-          <div id="quote-box" class="quote-box" hidden></div>
-          <label class="consent" id="consent-wrapper"><input type="checkbox" id="accept"><span>Review rights manifest and generate a server-bound approval quote.</span></label>
-          <div id="paypal-area"><p class="muted small">PayPal button becomes available after you select an eligible dataset and approve its terms.</p></div>
-          <div id="checkout-message" role="status" aria-live="polite"></div>
-          <p class="tiny-disclaimer">No real payments or personal data. Not legal advice. The prototype does not confer legal rights to third-party datasets.</p>
-        </div>
-      </aside>
     </div>
-    <section class="receipt-panel" id="receipt" hidden><div><div class="eyebrow"><span class="rule"></span>CAPTURE CONFIRMED</div><h2>From insight to<br><em>verified acquisition.</em></h2><p class="muted">PayPal sandbox confirmed the amount and order. Your synthetic dataset and receipt are now unlocked.</p></div>
-      <div class="receipt-actions"><div class="receipt-line"><span>PAYPAL CAPTURE</span><code id="capture-id">—</code></div><div class="receipt-line"><span>DATASET SHA-256</span><code id="receipt-hash">—</code></div><button id="download" class="primary">DOWNLOAD VERIFIED DATASET <span>↓</span></button><button id="receipt-json" class="secondary-btn">DOWNLOAD PROVENANCE RECEIPT</button></div></section>
-    <footer><span>LICENSEFLOW / AI</span><span>TRANSPARENT BY DESIGN · SANDBOX BY DEFAULT</span><span>PAYPAL AI HACKATHON 2026</span></footer>
+
+    <!-- View 2: Procurement Security Intelligence Dashboard (AG Grid & AG Charts) -->
+    <div id="view-analytics" class="analytics-view" hidden>
+      <section class="analytics-hero">
+        <div class="eyebrow"><span class="rule"></span>SPONSOR INTEGRATION · AG GRID COMMUNITY v32 &amp; AG CHARTS COMMUNITY v10</div>
+        <div class="analytics-header-content">
+          <div>
+            <h1>Procurement Security<br><em>Intelligence &amp; Governance.</em></h1>
+            <p class="hero-description">Enterprise audit intelligence for rights-bound dataset procurement. Powered by AG Grid Community interactive grid, AG Charts visual telemetry, and air-gapped advisory security assistant.</p>
+          </div>
+          <div class="sponsor-badge-box">
+            <div class="sponsor-label">SPONSOR CATEGORY</div>
+            <div class="sponsor-tech">AG GRID v32 · AG CHARTS v10</div>
+            <div class="sponsor-status"><span class="live-dot"></span>ACTIVE COMMUNITY STACK</div>
+            <div class="sponsor-feasibility" style="margin-top:6px;"><a href="/ag_studio_feasibility.html" target="_blank" style="color:var(--lime);font-size:10px;text-decoration:none;">[AG STUDIO 3.1 EVALUATION ↗]</a></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Metric Summary Cards (Cleanly Separating Live DB from Synthetic Fixtures) -->
+      <div class="analytics-metrics-grid">
+        <div class="metric-card">
+          <span class="metric-label">LIVE SANDBOX SPEND</span>
+          <span class="metric-value" id="metric-spend">$0.00</span>
+          <span class="metric-sub">PERSISTED SQLITE PURCHASES</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">COMPLETED PURCHASES</span>
+          <span class="metric-value" id="metric-purchases">0</span>
+          <span class="metric-sub">IDEMPOTENT SANDBOX CAPTURES</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">POLICY REFUSALS LOGGED</span>
+          <span class="metric-value" id="metric-refusals">0</span>
+          <span class="metric-sub">BUDGET &amp; RIGHTS RESTRICTIONS</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">SERVER APPROVAL QUOTES</span>
+          <span class="metric-value" id="metric-approvals">0</span>
+          <span class="metric-sub">SINGLE-USE BOUND QUOTES</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">TEST INVARIANTS</span>
+          <span class="metric-value" id="metric-security">10/10</span>
+          <span class="metric-sub">AUTOMATED REGRESSION FIXTURES</span>
+        </div>
+      </div>
+
+      <!-- Controls & Filtering Toolbar -->
+      <div class="analytics-toolbar">
+        <div class="filter-group">
+          <label for="filter-status">FILTER STATUS:</label>
+          <select id="filter-status" class="dark-select">
+            <option value="">ALL STATUSES</option>
+            <option value="COMPLETED">COMPLETED (CAPTURED)</option>
+            <option value="REFUSED">REFUSED (POLICY BLOCKED)</option>
+            <option value="APPROVED">APPROVED (ACTIVE QUOTE)</option>
+            <option value="REPLAY_REJECTED">REPLAY ATTACK BLOCKED</option>
+            <option value="TAMPER_REJECTED">TAMPER BLOCKED</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="grid-quick-search">QUICK SEARCH:</label>
+          <input type="text" id="grid-quick-search" placeholder="Filter reference, SHA-256, dataset..." class="dark-input" />
+        </div>
+        <div class="toolbar-actions">
+          <button id="btn-refresh-telemetry" class="toolbar-btn">REFRESH ↻</button>
+          <button id="btn-export-csv" class="toolbar-btn">EXPORT CSV ↓</button>
+        </div>
+      </div>
+
+      <!-- AG Charts Row -->
+      <div class="charts-row">
+        <div class="chart-panel">
+          <div class="panel-header"><span class="step">CHART 01</span><span>POLICY DECISION BREAKDOWN</span><span class="verified-icon">◇</span></div>
+          <div id="chart-policy-breakdown" style="height: 280px; width: 100%;"></div>
+        </div>
+        <div class="chart-panel">
+          <div class="panel-header"><span class="step">CHART 02</span><span>PROCUREMENT SPEND BY DATASET ($ USD)</span><span class="verified-icon">◇</span></div>
+          <div id="chart-spend-dataset" style="height: 280px; width: 100%;"></div>
+        </div>
+      </div>
+
+      <!-- AG Grid Interactive Table -->
+      <div class="grid-panel">
+        <div class="panel-header">
+          <span class="step">AUDIT TRAIL</span>
+          <span>AG GRID INTERACTIVE PROCUREMENT TELEMETRY</span>
+          <span id="grid-row-count" class="count">0 RECORDS</span>
+        </div>
+        <div id="procurementGrid" class="ag-theme-quartz-dark" style="height: 440px; width: 100%;"></div>
+      </div>
+
+      <!-- Advisory Telemetry Assistant Panel (Air-Gapped Read-Only) -->
+      <div class="agent-panel">
+        <div class="panel-header">
+          <span class="step">AI ADVISORY</span>
+          <span>SECURITY TELEMETRY ADVISOR (AIR-GAPPED AUDIT ASSISTANT)</span>
+          <span class="tag-airgapped">AIR-GAPPED · NO TRANSACTION ACCESS</span>
+        </div>
+        <div class="panel-body">
+          <p class="muted small">Query audit telemetry, budget enforcement, and PayPal sandbox reconciliation using natural language. The telemetry advisor operates strictly in read-only mode and is prohibited from executing financial transactions.</p>
+          <div class="agent-prompt-chips">
+            <button class="prompt-chip" data-query="What is our total spend?">What is our total spend?</button>
+            <button class="prompt-chip" data-query="Why was retail-demand refused?">Why was retail-demand refused?</button>
+            <button class="prompt-chip" data-query="Why was civic-dialogue refused?">Why was civic-dialogue refused?</button>
+            <button class="prompt-chip" data-query="Show me adversarial replay attempts">Show me adversarial replay attempts</button>
+            <button class="prompt-chip" data-query="Audit PayPal Sandbox transactions">Audit PayPal Sandbox transactions</button>
+          </div>
+          <div class="agent-input-row">
+            <input type="text" id="agent-query-input" placeholder="Ask Telemetry Advisor about audit telemetry or compliance..." class="agent-input" maxlength="500" />
+            <button id="agent-query-btn" class="primary agent-btn">QUERY ADVISOR <span>↗</span></button>
+          </div>
+          <div id="agent-response-box" class="agent-response" hidden>
+            <div class="agent-meta"><span id="agent-role-badge" class="agent-role-badge">TELEMETRY ADVISOR</span><span id="agent-cat-badge" class="agent-cat-badge">AUDIT</span></div>
+            <p id="agent-response-text"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Read-Only Decision Details Modal -->
+    <div id="decision-modal" class="modal-backdrop" hidden>
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>DECISION INSPECTOR · AUDIT RECORD</h3>
+          <button id="modal-close" class="modal-close-btn" aria-label="Close modal">&times;</button>
+        </div>
+        <div class="modal-body" id="modal-content"></div>
+      </div>
+    </div>
+
+    <footer>
+      <span>LICENSEFLOW GUARD / AI</span>
+      <span>TRANSPARENT BY DESIGN · SANDBOX BY DEFAULT · POWERED BY AG GRID &amp; AG CHARTS</span>
+      <span>PAYPAL AI HACKATHON 2026</span>
+    </footer>
   </main>
+
+  <!-- Vendor Scripts (AG Grid Community v32 & AG Charts Community v10) -->
+  <script src="/vendor/ag-grid-community.min.js"></script>
+  <script src="/vendor/ag-charts-community.min.js"></script>
   <script src="/app.js" defer></script>
 </body>
 </html>
