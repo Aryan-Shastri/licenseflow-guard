@@ -19,7 +19,7 @@
 
 ## Adversarial Test Suite Coverage
 
-A dedicated test suite ([`tests/test_security_adversarial.py`](../tests/test_security_adversarial.py)) verifies the following 10 threat scenarios:
+A dedicated test suite ([`tests/test_security_adversarial.py`](../../tests/test_security_adversarial.py)) verifies the following 10 threat scenarios:
 
 1. **`test_adv_01_prompt_injection_cannot_override_policy`**: Jailbreak/injection attempt in user goal fails against deterministic budget check.
 2. **`test_adv_02_unapproved_purchase_attempt_blocked`**: Direct purchase attempt without server quote returns 403 Forbidden.

@@ -1,7 +1,33 @@
+# Environment & Local Secrets
 .env
+*.local.env
+!.env.example
+
+# Python & Virtual Environments
 .venv/
+venv/
+ENV/
+env/
 __pycache__/
+*.py[cod]
+*$py.class
+
+# Testing & Coverage
 .pytest_cache/
-*.pyc
+.coverage
+htmlcov/
+
+# Runtime SQLite Databases & Data Files
 data/
+*.sqlite3
+*.db
+
+# Logs & Temporary Files
+*.log
+*.tmp
+*.bak
+scratch/
+
+# Operating System Files
 .DS_Store
+Thumbs.db

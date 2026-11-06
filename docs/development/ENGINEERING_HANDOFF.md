@@ -99,7 +99,7 @@ Acceptance: a legitimate scenario succeeds, an injected/over-budget/unsupported-
 
 1. Improve status states: idle, running AI match, eligible, ineligible with rationale, awaiting approval, creating order, buyer approval, capturing, completed, failed/retry with instructions. Avoid displaying `Capture confirmed` prior to verified completion.
 2. Keyboard and mobile usability, readable evidence/rights explanation, clear mock/sandbox labeling, no fake "verified" claims about external rights.
-3. Update README, `.env.example` (placeholders only), security limitations, architecture diagram in Markdown/Mermaid, run/test instructions for Windows Git Bash, and `docs/DEMO_SCRIPT.md` for a **maximum ~3-minute** demonstration.
+3. Update README, `.env.example` (placeholders only), security limitations, architecture diagram in Markdown/Mermaid, run/test instructions for Windows Git Bash, and `docs/release/DEMO_SCRIPT.md` for a **maximum ~3-minute** demonstration.
 4. Prepare a public-repository checklist. **Never push or deploy without the owner's approval.** Verify secret scanning and `.gitignore` first.
 
 Acceptance: clean local installation instructions, reproducible tests, coherent 3-minute end-to-end demo, and accurate disclosure of sandbox and licensing limitations.

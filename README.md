@@ -3,6 +3,10 @@
 **Rights-aware AI dataset discovery, deterministic policy enforcement, PayPal Sandbox checkout, provenance receipts, and AG Grid procurement intelligence.**
 
 > **Hackathon Prototype**: Built for the **PayPal AI Hackathon 2026**. Demonstrates evidence-backed AI recommendations, deterministic licensing refusals, server-persisted approval quotes, verified PayPal Sandbox captures, and enterprise audit telemetry. Catalog metadata, dataset samples, and licensing tags (`LF-DEMO-*`) are **synthetic**. Payments run strictly on the **PayPal Sandbox API** (`https://api-m.sandbox.paypal.com`) and do not process real funds.
+>
+> 📄 **Devpost Submission:** [`docs/release/DEVPOST_SUBMISSION.md`](docs/release/DEVPOST_SUBMISSION.md)
+> 🎬 **3-Minute Demo Video Script:** [`docs/release/DEMO_SCRIPT.md`](docs/release/DEMO_SCRIPT.md)
+> 📚 **Complete Documentation Index:** [`docs/README.md`](docs/README.md)
 
 ---
 
@@ -194,6 +198,19 @@ flowchart TD
 3. **Single-Use Replay Protection**: Approval tokens are hashed (`SHA-256`), verified with constant-time comparison (`hmac.compare_digest`), and atomically transitioned to `CONSUMED` on purchase creation.
 4. **No Financial AI Agents**: The telemetry advisor is air-gapped and prohibited from authorizing purchases or creating PayPal orders.
 5. **No Production Claims**: This demo does not constitute certified legal rights licensing or enterprise compliance certification.
+
+---
+
+## Documentation Directory
+
+| Category | Primary Document | Description |
+| :--- | :--- | :--- |
+| **Release & Submission** | [`docs/release/DEVPOST_SUBMISSION.md`](docs/release/DEVPOST_SUBMISSION.md) | Official Devpost write-up, problem statement, architecture & sponsor disclosures |
+| **Judge Video Script** | [`docs/release/DEMO_SCRIPT.md`](docs/release/DEMO_SCRIPT.md) | Timed 3-minute video recording walkthrough for hackathon evaluation |
+| **Architecture** | [`docs/architecture/PROJECT_BRIEF.md`](docs/architecture/PROJECT_BRIEF.md) | Core system design, sequence diagrams & MVP scope |
+| **Security & Threat Model** | [`docs/security/THREAT_MODEL.md`](docs/security/THREAT_MODEL.md) | Security boundary matrix, OWASP LLM alignment & 10 adversarial test fixtures |
+| **Sponsor Integration** | [`docs/sponsors/PAYPAL_SANDBOX_REFERENCE.md`](docs/sponsors/PAYPAL_SANDBOX_REFERENCE.md) | PayPal Developer Sandbox test credentials, test cards & capture verification |
+| **Development** | [`docs/development/ENGINEERING_HANDOFF.md`](docs/development/ENGINEERING_HANDOFF.md) | Engineering handoff, environment baseline & implementation logs |
 
 ---
 
